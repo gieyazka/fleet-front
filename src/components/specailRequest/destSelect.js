@@ -1,20 +1,13 @@
 /* eslint-disable no-use-before-define */
 import React from "react";
 import TextField from "@material-ui/core/TextField";
-// import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import ListSelect from "./listSelect";
 import { useForm } from "react-hook-form";
 
 export default function ComboBox(props) {
   // console.log(props);
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    errors,
-    getValues,
-    reset,
-  } = useForm();
+
   const [destPlace, setDestPlace] = React.useState();
   const getData = async () => {
     return await fetch(`https://delivery-backend-1.powermap.live/orides`, {
@@ -30,13 +23,13 @@ export default function ComboBox(props) {
       setDestPlace(res);
     });
   }, []);
-  const onUpdate = (v) => {
-    props.changeDest(props.index, v);
-  };
+  // const onUpdate = (v) => {
+  //   props.changeDest(props.index, v);
+  // };
   // console.log(destPlace);
   return (
     <>
-      {destPlace && (
+      {/* {destPlace && (
         <ListSelect
           inputs={destPlace}
           placeholder={props.label}
@@ -45,9 +38,9 @@ export default function ComboBox(props) {
           name={props.name}
           // clear={this.state.isClear}
         />
-      )}
+      )} */}
 
-      {/* <Autocomplete
+      <Autocomplete
       id="combo-box-demo"
       options={destPlace}
       getOptionLabel={(option) => option.name}
@@ -60,7 +53,7 @@ export default function ComboBox(props) {
           label={props.label}
         />
       )}
-    /> */}
+    />
     </>
   );
 }

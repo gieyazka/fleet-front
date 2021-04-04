@@ -13,6 +13,14 @@ import moment from "moment";
 import DestSelect from "./destSelect.js";
 import Alert from "./alert";
 import { useForm, useFieldArray } from "react-hook-form";
+
+import MomentUtils from '@date-io/moment';
+import {
+  DatePicker,
+  TimePicker,
+  DateTimePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
 const Form = () => {
   const [destState, setDestState] = React.useState([{}]);
   const {
@@ -30,21 +38,35 @@ const Form = () => {
       name: "dest",
     }
   );
+
   const [destData, setDestData] = React.useState([]);
   // const [startData, setstartData] = React.useState([]);
+  const [selectedDate, handleDateChange] = React.useState({ reqDate: null, time: null, date: new moment().format('DD/MM/YYYY') });
   const [destError, setDestError] = React.useState(false);
   const changeDest = (index, d) => {
     destData[index] = d.value;
     let items = destData;
-    setValue(`dest[${index}]`, d.value);
+    // setValue(`dest[${index}]`, d.value);
   };
-  const changeStart = (index, d) => {
-    // destData = d.value;
-    // let items = destData;
-    setValue(`placeStart`, d.value);
-    // console.log(getValues("placeStart"));
-  };
+  // const changeStart = (index, d) => {
+  //   // destData = d.value;
+  //   // let items = destData;
+  //   setValue(`placeStart`, d.value);
+  //   // console.log(getValues("placeStart"));
+  // };
   // console.log(destData);
+  const handleReqDest = (e, type) => {
+    if (type == 'reqDate') {
+      handleDateChange({ ...selectedDate, reqDate: e })
+      setValue("requestDate", e);
+    }
+    if (type == 'date') {
+      handleDateChange({ ...selectedDate, date: e })
+      setValue("date", e);
+    }
+
+
+  }
   const onSubmit = async (data, e) => {
     console.log(data);
     // if (getValues("cost").includes("Other")) {
@@ -65,21 +87,21 @@ const Form = () => {
     let destContact = [];
     for (const d of data.destination) {
       console.log(d);
-
+      destPlace.push(d.place);
       destContact.push(d.contact);
       destTel.push(d.tel);
     }
-    console.log(data.destination.length, destData.length);
-    if (data.destination.length !== destData.length) {
-      setDestError(true);
-      return;
-    }
-    for (const d of destData) {
-      destPlace.push(d);
-    }
+    // console.log(data.destination.length, destData.length);
+    // if (data.destination.length !== destData.length) {
+    //   setDestError(true);
+    //   return;
+    // }
+    // for (const d of destData) {
+    //   destPlace.push(d);
+    // }
     console.log(destPlace);
-    setDestError(false);
-    // console.log(JSON.stringify(destPlace));
+    // setDestError(false);
+    console.log(JSON.stringify(destPlace));
     // return;
     const body = {
       date: moment(data.date, "YYYY-MM-DD").format("YYYYMMDD"),
@@ -107,6 +129,7 @@ const Form = () => {
     const oldData = data;
     console.log(body);
     // return null;
+    return
     await fetch("https://delivery-backend-1.powermap.live/specialrequests", {
       method: "POST",
       headers: {
@@ -212,35 +235,31 @@ const Form = () => {
               <table align="center" border="1" cellpadding="0" cellspacing="0" width="400" style='font-family : Bai Jamjuree ;font-size : 16px ;'>
                 <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Job No. </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.jobNo
-                    } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.jobNo
+        } </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Date to use car </td>
                     <td style='padding : 4px 0px ; text-align :center ;'>${moment(
-                      data.requestDate,
-                      "YYYYMMDD"
-                    ).format("DD-MM-YYYY")}  </td>
+          data.requestDate,
+          "YYYYMMDD"
+        ).format("DD-MM-YYYY")}  </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'> Car </td>
-                    <td style='padding : 4px 0px ;  text-align :center ;'>${
-                      data.carType
-                    }  ${data.amountCar}  คัน
+                    <td style='padding : 4px 0px ;  text-align :center ;'>${data.carType
+        }  ${data.amountCar}  คัน
                     </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Request By </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.requestBy
-                    } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.requestBy
+        } </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Purpose </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.purpose
-                    } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.purpose
+        } </td>
                 </tr>
           </table>
           <br>
@@ -335,31 +354,35 @@ const Form = () => {
     // register("suppiler", { required: "Please select suppiler" });
     register("carType", { required: "Please select type of car" });
     register("return", { required: "Please select return" });
-    register("placeStart", { required: "Please select start place" });
+    register("date", { required: "Please select date" });
+    register("requestDate", { required: "Please select date" });
+    // register("placeStart", { required: "Please select start place" });
 
+    // setValue("requestDate", new moment());
     setValue("return", "No");
     // register("dest", { required: "Please select destination" });
     // register("approvedBy", { required: "Please select approver" });
   }, [register]);
 
   return (
-    <React.Fragment>
-      <div>
-        <Card
-          style={{
-            marginBottom: 24,
-            marginTop: 24,
-            marginLeft: "8vw",
-            marginRight: "8vw",
-          }}
-        >
-          <CardContent style={{ marginLeft: 24, marginRight: 24 }}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Grid justify="space-evenly" container spacing={16}>
-                <Grid justify="center" item container>
-                  <h2>TRANSPORTATION REQUISITION FORM</h2>
-                </Grid>
-                {/* <Grid xs={12} sm={4} container justify="flex-start" item>
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <React.Fragment>
+        <div>
+          <Card
+            style={{
+              marginBottom: 24,
+              marginTop: 24,
+              marginLeft: "8vw",
+              marginRight: "8vw",
+            }}
+          >
+            <CardContent style={{ marginLeft: 24, marginRight: 24 }}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Grid justify="space-evenly" container spacing={2}>
+                  <Grid justify="center" item container>
+                    <h2>TRANSPORTATION REQUISITION FORM</h2>
+                  </Grid>
+                  {/* <Grid xs={12} sm={4} container justify="flex-start" item>
                   <TextField
                     inputRef={register({ required: true })}
                     name="from"
@@ -375,99 +398,111 @@ const Form = () => {
                     />
                   )}
                 </Grid> */}
-                <Grid xs={6} sm={6} item>
-                  <TextField
-                    fullWidth={true}
-                    inputRef={register({ required: true })}
-                    name="date"
-                    id="date"
-                    label="Date ."
-                    type="date"
-                    defaultValue={new moment().format("YYYY-MM-DD")}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </Grid>
-                <Grid xs={6} sm={6} item>
-                  <TextField
-                    // inputProps={{
-                    //   readOnly: true,
-                    // }}
-                    inputRef={register({ required: true })}
-                    name="jobNo"
-                    fullWidth={true}
-                    label="Job No."
-                    // defaultValue="1111111111"
-                  />
-                  {errors.jobNo && (
-                    <Alert
-                      severity="error"
-                      message="Please fill Jobno"
-                      width="80%"
+                  <Grid xs={6} sm={6} item>
+                    <DatePicker
+                      label="Requirement Date to use (วันที่ต้องการใช้รถ)"
+                      value={selectedDate.date}
+                      // onChange={handleDateChange}
+                      // value={getValues('requestDate')}
+                      onChange={(e) => handleReqDest(e, 'date')}
+                      autoOk
+                      disablePast
+                      fullWidth={true}
+                      format='DD/MM/YYYY'
                     />
-                  )}
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Grid
-                    container
-                    item
-                    xs={12}
-                    md={12}
-                    style={{ display: "inline-block" }}
-                  >
-                    <p>
-                      <b>Cost : </b>
-                    </p>
-                    <div style={{ marginLeft: "2.5vw" }}>
-                      <RadioGroup
-                        style={{ display: "inline" }}
-                        aria-label="Cost"
-                        name="cost"
-                        // value={value}
-                        onChange={handleCostChange}
-                      >
-                        {cost.map((d) => (
-                          // <span key={d.company}>
-                          //   {d.company == "Other" ? <br /> : null}
-                          <FormControlLabel
-                            key={d.company}
-                            value={d.company}
-                            control={<Radio color="primary" />}
-                            label={d.company}
-                          />
-                          // </span>
-                        ))}
-                      </RadioGroup>
-                      <TextField
-                        inputRef={register({ required: !otherCost })}
-                        inputProps={{
-                          disabled: otherCost,
-                        }}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        name="costOther"
-                        label="Other"
-                      />
-                    </div>
-                    {errors.cost && (
+
+                    {/* <TextField
+                      fullWidth={true}
+                      inputRef={register({ required: true })}
+                      name="date"
+                      id="date"
+                      label="Date ."
+                      type="date"
+                      defaultValue={new moment().format("YYYY-MM-DD")}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    /> */}
+                  </Grid>
+                  <Grid xs={6} sm={6} item>
+                    <TextField
+                      // inputProps={{
+                      //   readOnly: true,
+                      // }}
+                      inputRef={register({ required: true })}
+                      name="jobNo"
+                      fullWidth={true}
+                      label="Job No."
+                    // defaultValue="1111111111"
+                    />
+                    {errors.jobNo && (
                       <Alert
                         severity="error"
-                        message={errors.cost.message}
-                        width="80%"
-                      />
-                    )}
-                    {errors.costOther && (
-                      <Alert
-                        severity="error"
-                        message="Please fill other cost"
+                        message="Please fill Jobno"
                         width="80%"
                       />
                     )}
                   </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Grid
+                      container
+                      item
+                      xs={12}
+                      md={12}
+                      style={{ display: "inline-block" }}
+                    >
+                      <p>
+                        <b>Cost : </b>
+                      </p>
+                      <div style={{ marginLeft: "2.5vw" }}>
+                        <RadioGroup
+                          style={{ display: "inline" }}
+                          aria-label="Cost"
+                          name="cost"
+                          // value={value}
+                          onChange={handleCostChange}
+                        >
+                          {cost.map((d) => (
+                            // <span key={d.company}>
+                            //   {d.company == "Other" ? <br /> : null}
+                            <FormControlLabel
+                              key={d.company}
+                              value={d.company}
+                              control={<Radio color="primary" />}
+                              label={d.company}
+                            />
+                            // </span>
+                          ))}
+                        </RadioGroup>
+                        <TextField
+                          inputRef={register({ required: !otherCost })}
+                          inputProps={{
+                            disabled: otherCost,
+                          }}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          name="costOther"
+                          label="Other"
+                        />
+                      </div>
+                      {errors.cost && (
+                        <Alert
+                          severity="error"
+                          message={errors.cost.message}
+                          width="80%"
+                        />
+                      )}
+                      {errors.costOther && (
+                        <Alert
+                          severity="error"
+                          message="Please fill other cost"
+                          width="80%"
+                        />
+                      )}
+                    </Grid>
 
-                  {/* <Grid item xs={12} md={12}>
+                    {/* <Grid item xs={12} md={12}>
                     <p> Suppiler :</p>
                     <div style={{ marginLeft: "2.5vw" }}>
                       <RadioGroup
@@ -525,362 +560,376 @@ const Form = () => {
                       />
                     )}
                   </Grid> */}
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <div style={{ marginTop: 8 }}>
-                    Please arrange the transportation as the following below :{" "}
-                  </div>
-                  <div style={{ marginLeft: "2.5vw", marginTop: "12px" }}>
-                    <RadioGroup
-                      style={{ display: "inline-block" }}
-                      aria-label="carType"
-                      name="carType"
-                      // value={value}
-                      onChange={(e) => setValue("carType", e.target.value)}
-                    >
-                      {/* <div
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <div style={{ marginTop: 8 }}>
+                      Please arrange the transportation as the following below :{" "}
+                    </div>
+                    <div style={{ marginLeft: "2.5vw", marginTop: "12px" }}>
+                      <RadioGroup
+                        style={{ display: "inline-block" }}
+                        aria-label="carType"
+                        name="carType"
+                        // value={value}
+                        onChange={(e) => setValue("carType", e.target.value)}
+                      >
+                        {/* <div
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
                         }}
                       > */}
-                      <FormControlLabel
-                        value="Pick Up"
-                        control={<Radio color="primary" />}
-                        label="Pick Up (Not over 1 ton)"
-                      />
-                      <FormControlLabel
-                        value="6 Wheels (ตู้)"
-                        control={<Radio color="primary" />}
-                        label="6 Wheels"
-                      />
-                      {/* </div> */}
-                      {/* <div
+                        <FormControlLabel
+                          value="Pick Up"
+                          control={<Radio color="primary" />}
+                          label="Pick Up (Not over 1 ton)"
+                        />
+                        <FormControlLabel
+                          value="6 Wheels (ตู้)"
+                          control={<Radio color="primary" />}
+                          label="6 Wheels"
+                        />
+                        {/* </div> */}
+                        {/* <div
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
                         }}
                       > */}
-                      <FormControlLabel
-                        value="10 Wheels (ตู้)"
-                        control={<Radio color="primary" />}
-                        label="10 Wheels (ตู้)"
-                      />
-                      <FormControlLabel
-                        value="10 Wheels (เปลือย)"
-                        control={<Radio color="primary" />}
-                        label="10 Wheels (เปลือย)"
-                      />
-                      {/* </div> */}
-                      {/* <div
+                        <FormControlLabel
+                          value="10 Wheels (ตู้)"
+                          control={<Radio color="primary" />}
+                          label="10 Wheels (ตู้)"
+                        />
+                        <FormControlLabel
+                          value="10 Wheels (เปลือย)"
+                          control={<Radio color="primary" />}
+                          label="10 Wheels (เปลือย)"
+                        />
+                        {/* </div> */}
+                        {/* <div
                         style={{
                           display: "flex",
                           justifyContent: "space-between",
                         }}
                       > */}
-                      <FormControlLabel
-                        value="18 Wheels (ตู้)"
-                        control={<Radio color="primary" />}
-                        label="18 Wheels (ตู้)"
+                        <FormControlLabel
+                          value="18 Wheels (ตู้)"
+                          control={<Radio color="primary" />}
+                          label="18 Wheels (ตู้)"
+                        />
+                        <FormControlLabel
+                          value="18 Wheels (เปลือย)"
+                          control={<Radio color="primary" />}
+                          label="18 Wheels (เปลือย)"
+                        />
+                        {/* </div> */}
+                      </RadioGroup>
+                    </div>
+                    {errors.carType && (
+                      <Alert
+                        severity="error"
+                        message={errors.carType.message}
+                        width="80%"
                       />
-                      <FormControlLabel
-                        value="18 Wheels (เปลือย)"
-                        control={<Radio color="primary" />}
-                        label="18 Wheels (เปลือย)"
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={6} item>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      // required
+                      name="product"
+                      fullWidth={true}
+                      label="Product"
+                    />
+                    {errors.product && (
+                      <Alert
+                        severity="error"
+                        message="Please fill product"
+                        width="80%"
                       />
-                      {/* </div> */}
-                    </RadioGroup>
-                  </div>
-                  {errors.carType && (
-                    <Alert
-                      severity="error"
-                      message={errors.carType.message}
-                      width="80%"
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={6} item>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      // required
+                      name="amountCar"
+                      fullWidth={true}
+                      type="number"
+                      label="Need Quantity Car Truck (จำนวนรถที่ต้องการใช้)"
                     />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={6} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    // required
-                    name="product"
-                    fullWidth={true}
-                    label="Product"
-                  />
-                  {errors.product && (
-                    <Alert
-                      severity="error"
-                      message="Please fill product"
-                      width="80%"
+                    {errors.amountCar && (
+                      <Alert
+                        severity="error"
+                        message="Please fill Quantity Car Truck"
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+
+                  <Grid xs={12} sm={6} item>
+                    <DatePicker
+                      label="Requirement Date to use (วันที่ต้องการใช้รถ)"
+                      value={selectedDate.reqDate}
+                      // onChange={handleDateChange}
+                      // value={getValues('requestDate')}
+                      onChange={(e) => handleReqDest(e, 'reqDate')}
+                      autoOk
+                      disablePast
+                      fullWidth={true}
+                      format='DD/MM/YYYY'
                     />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={6} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    // required
-                    name="amountCar"
-                    fullWidth={true}
-                    type="number"
-                    label="Need Quantity Car Truck (จำนวนรถที่ต้องการใช้)"
-                  />
-                  {errors.amountCar && (
-                    <Alert
-                      severity="error"
-                      message="Please fill Quantity Car Truck"
-                      width="80%"
+
+                    {/* <TextField
+                      inputRef={register({ required: true })}
+                      // required
+                      name="requestDate"
+                      fullWidth={true}
+                      label="Requirement Date to use (วันที่ต้องการใช้รถ)"
+                      type="date"
+
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    /> */}
+                    {errors.requestDate && (
+                      <Alert
+                        severity="error"
+                        message="Please fill date"
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={6} item>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      type="time"
+                      inputProps={{
+                        onKeyDown: (event) => {
+                          event.preventDefault();
+                        },
+                      }}
+                      // ampm={false}
+                      name="arriveTime"
+                      fullWidth={true}
+                      label="Need arrival time (เวลาขึ้นงาน)"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={6} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    // required
-                    name="requestDate"
-                    fullWidth={true}
-                    label="Requirement Date to use (วันที่ต้องการใช้รถ)"
-                    type="date"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                  {errors.requestDate && (
-                    <Alert
-                      severity="error"
-                      message="Please fill date"
-                      width="80%"
+                    {errors.arriveTime && (
+                      <Alert
+                        severity="error"
+                        message="Please fill time"
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={12} item>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      name="purpose"
+                      fullWidth={true}
+                      label="Purpose to Request"
                     />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={6} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    type="time"
-                    inputProps={{
-                      onKeyDown: (event) => {
-                        event.preventDefault();
-                      },
-                    }}
-                    // ampm={false}
-                    name="arriveTime"
-                    fullWidth={true}
-                    label="Need arrival time (เวลาขึ้นงาน)"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                  {errors.arriveTime && (
-                    <Alert
-                      severity="error"
-                      message="Please fill time"
-                      width="80%"
+                    {errors.purpose && (
+                      <Alert
+                        severity="error"
+                        message="Please fill purpose"
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={4} item>
+                    <DestSelect
+                      index={0}
+                      // changeDest={changeStart}
+                      label={`Start Place`}
+                      inputRef={register({ required: true })}
+                      name={`startPlace`}
                     />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={12} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    name="purpose"
-                    fullWidth={true}
-                    label="Purpose to Request"
-                  />
-                  {errors.purpose && (
-                    <Alert
-                      severity="error"
-                      message="Please fill purpose"
-                      width="80%"
-                    />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={4} item>
-                  <DestSelect
-                    index={0}
-                    changeDest={changeStart}
-                    label={`Start Place`}
-                    inputRef={register({ required: true })}
-                    name={`startPlace`}
-                  />
-                  {/* <TextField
+                    {/* <TextField
                     inputRef={register({ required: true })}
                     name="startPlace"
                     fullWidth={true}
                     label="The Place to Start"
                   /> */}
-                  {errors.placeStart && (
-                    <Alert
-                      severity="error"
-                      message={errors.placeStart.message}
-                      width="80%"
+                    {errors.startPlace && (
+                      <Alert
+                        severity="error"
+                        message={errors.startPlace.message}
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={4} item>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      name="startContact"
+                      fullWidth={true}
+                      label="Contact Name"
                     />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={4} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    name="startContact"
-                    fullWidth={true}
-                    label="Contact Name"
-                  />
-                  {errors.startContact && (
-                    <Alert severity="error" message="Please fill contact" />
-                  )}
-                </Grid>
-                <Grid xs={12} sm={4} item style={{ position: "relative" }}>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    name="startTel"
-                    label="Tel"
-                    fullWidth={true}
-                  />
+                    {errors.startContact && (
+                      <Alert severity="error" message="Please fill contact" />
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={4} item style={{ position: "relative" }}>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      name="startTel"
+                      label="Tel"
+                      fullWidth={true}
+                    />
 
-                  {errors.startTel && (
-                    <Alert
-                      severity="error"
-                      message="Please fill tel"
-                      width="80%"
-                    />
-                  )}
-                </Grid>
-                {destState.map((res, index) => (
-                  <>
-                    <Grid xs={12} sm={4} item>
-                      {/* <TextField
+                    {errors.startTel && (
+                      <Alert
+                        severity="error"
+                        message="Please fill tel"
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+                  {destState.map((res, index) => (
+                    <>
+                      <Grid xs={12} sm={4} item>
+                        {/* <TextField
                         inputRef={register({ required: true })}
                         name={`destination[${index}].place`}
                         fullWidth={true}
                         label={`Destination ${index + 1}`}
                       /> */}
-                      <DestSelect
-                        changeDest={changeDest}
-                        index={index}
-                        label={`Destination ${index + 1}`}
-                        inputRef={register({ required: true })}
-                        name={`dest[${index}].place`}
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={4} item>
-                      <TextField
-                        inputRef={register({ required: true })}
-                        name={`destination[${index}].contact`}
-                        fullWidth={true}
-                        label="Contact Name"
-                      />
-                    </Grid>
-                    <Grid xs={12} sm={4} item style={{ position: "relative" }}>
-                      <TextField
-                        style={{ width: "80%" }}
-                        inputRef={register({ required: true })}
-                        name={`destination[${index}].tel`}
-                        label="Tel"
-                      />
+                        <DestSelect
+                          // changeDest={changeDest}
+                          index={index}
+                          label={`Destination ${index + 1}`}
+                          inputRef={register({ required: true })}
+                          name={`destination[${index}].place`}
+                        />
+                      </Grid>
+                      <Grid xs={12} sm={4} item>
+                        <TextField
+                          inputRef={register({ required: true })}
+                          name={`destination[${index}].contact`}
+                          fullWidth={true}
+                          label="Contact Name"
+                        />
+                      </Grid>
+                      <Grid xs={12} sm={4} item style={{ position: "relative" }}>
+                        <TextField
+                          style={{ width: "80%" }}
+                          inputRef={register({ required: true })}
+                          name={`destination[${index}].tel`}
+                          label="Tel"
+                        />
 
-                      {index === 0 ? (
-                        <Button
-                          style={{
-                            position: "absolute",
-                            right: 4,
-                            marginTop: 8,
-                          }}
-                          color="primary"
-                          variant="outlined"
-                          disabled={destState.length === 5 ? true : false}
-                          onClick={() => addFormData()}
-                        >
-                          เพิ่ม
-                        </Button>
-                      ) : index === destState.length - 1 ? (
-                        <Button
-                          style={{
-                            position: "absolute",
-                            right: 4,
-                            marginTop: 8,
-                          }}
-                          color="secondary"
-                          variant="outlined"
-                          onClick={() => removeFormData()}
-                        >
-                          ลบ
-                        </Button>
-                      ) : null}
-                    </Grid>
-                  </>
-                ))}
-                {errors.destination && (
-                  <Alert
-                    severity="error"
-                    message="Please fill contact or tel"
-                    width="80%"
-                  />
-                )}
-                {destError === true && (
-                  <Alert
-                    severity="error"
-                    message="Please select destination"
-                    width="80%"
-                  />
-                )}
-                <Grid item xs={12} md={12} style={{ display: "flex" }}>
-                  <p> Return :</p>
-                  <div style={{ marginLeft: "2.5vw" }}>
-                    <RadioGroup
-                      style={{ display: "block", marginTop: "6px" }}
-                      aria-label="Return"
-                      name="return"
-                      onChange={(e) => setValue("return", e.target.value)}
-                      defaultValue="No"
-                      // value={value}
-                    >
-                      <FormControlLabel
-                        value="Yes"
-                        control={<Radio color="primary" />}
-                        label="Yes"
-                      />
-                      <FormControlLabel
-                        value="No"
-                        control={<Radio color="primary" />}
-                        label="No"
-                      />
-                    </RadioGroup>
-                  </div>
-                </Grid>
-                {errors.return && (
-                  <Alert
-                    severity="error"
-                    message={errors.return.message}
-                    width="80%"
-                  />
-                )}
-                <Grid xs={12} sm={6} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    // required
-                    name="requestBy"
-                    fullWidth={true}
-                    label="Request By"
-                  />
-                  {errors.requestBy && (
+                        {index === 0 ? (
+                          <Button
+                            style={{
+                              position: "absolute",
+                              right: 4,
+                              marginTop: 8,
+                            }}
+                            color="primary"
+                            variant="outlined"
+                            disabled={destState.length === 5 ? true : false}
+                            onClick={() => addFormData()}
+                          >
+                            เพิ่ม
+                          </Button>
+                        ) : index === destState.length - 1 ? (
+                          <Button
+                            style={{
+                              position: "absolute",
+                              right: 4,
+                              marginTop: 8,
+                            }}
+                            color="secondary"
+                            variant="outlined"
+                            onClick={() => removeFormData()}
+                          >
+                            ลบ
+                          </Button>
+                        ) : null}
+                      </Grid>
+                    </>
+                  ))}
+                  {errors.destination && (
                     <Alert
                       severity="error"
-                      message="Please fill request by"
+                      message="Please fill contact or tel"
                       width="80%"
                     />
                   )}
-                </Grid>
-                <Grid xs={12} sm={6} item>
-                  <TextField
-                    inputRef={register({ required: true })}
-                    // required
-                    name="approvedBy"
-                    fullWidth={true}
-                    label="Approved By"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    inputProps={{
-                      readOnly: otherCost,
-                    }}
-                  />
-                  {/* <InputLabel id="ApprovedBy">Approved By</InputLabel>
+                  {destError === true && (
+                    <Alert
+                      severity="error"
+                      message="Please select destination"
+                      width="80%"
+                    />
+                  )}
+                  <Grid item xs={12} md={12} style={{ display: "flex" }}>
+                    <p> Return :</p>
+                    <div style={{ marginLeft: "2.5vw" }}>
+                      <RadioGroup
+                        style={{ display: "block", marginTop: "6px" }}
+                        aria-label="Return"
+                        name="return"
+                        onChange={(e) => setValue("return", e.target.value)}
+                        defaultValue="No"
+                      // value={value}
+                      >
+                        <FormControlLabel
+                          value="Yes"
+                          control={<Radio color="primary" />}
+                          label="Yes"
+                        />
+                        <FormControlLabel
+                          value="No"
+                          control={<Radio color="primary" />}
+                          label="No"
+                        />
+                      </RadioGroup>
+                    </div>
+                  </Grid>
+                  {errors.return && (
+                    <Alert
+                      severity="error"
+                      message={errors.return.message}
+                      width="80%"
+                    />
+                  )}
+                  <Grid xs={12} sm={6} item>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      // required
+                      name="requestBy"
+                      fullWidth={true}
+                      label="Request By"
+                    />
+                    {errors.requestBy && (
+                      <Alert
+                        severity="error"
+                        message="Please fill request by"
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+                  <Grid xs={12} sm={6} item>
+                    <TextField
+                      inputRef={register({ required: true })}
+                      // required
+                      name="approvedBy"
+                      fullWidth={true}
+                      label="Approved By"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      inputProps={{
+                        readOnly: otherCost,
+                      }}
+                    />
+                    {/* <InputLabel id="ApprovedBy">Approved By</InputLabel>
                   <Select
                     fullWidth={true}
                     labelId="ApprovedBy"
@@ -892,15 +941,15 @@ const Form = () => {
                     <MenuItem value={20}>20</MenuItem>
                     <MenuItem value={30}>30</MenuItem>
                   </Select> */}
-                  {errors.approvedBy && (
-                    <Alert
-                      severity="error"
-                      message="Please select Approver"
-                      width="80%"
-                    />
-                  )}
-                </Grid>
-                {/* <Grid xs={12} sm={6} item>
+                    {errors.approvedBy && (
+                      <Alert
+                        severity="error"
+                        message="Please select Approver"
+                        width="80%"
+                      />
+                    )}
+                  </Grid>
+                  {/* <Grid xs={12} sm={6} item>
                   <TextField
                     inputRef={register({ required: true })}
                     // required
@@ -936,17 +985,18 @@ const Form = () => {
                     />
                   )}
                 </Grid> */}
-                <Grid item sm={12} container justify="center">
-                  <Button color="primary" type="submit" variant="outlined">
-                    Submit
+                  <Grid item sm={12} container justify="center">
+                    <Button color="primary" type="submit" variant="outlined">
+                      Submit
                   </Button>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </React.Fragment>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </React.Fragment>
+    </MuiPickersUtilsProvider>
   );
 };
 

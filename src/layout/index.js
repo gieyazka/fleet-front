@@ -210,27 +210,23 @@ class AppLayout extends React.Component {
       <Layout
         stickyFooter // default false
         mainGrow={false} // default true
-        appBarPosition={"static"} //default value
-        appBarContent={
-          <BasicAppBar title={"Delivery Management System"} menuIconAlways />
-        } // If no content it will render null\
-        /** Hide footer for map */
-        footerContent={
-          history.location.pathname !== "/map" ? (
-            <BasicFooter
-              title={"Powermap"}
-              logo={require("../assets/images/logo.png")}
-            />
-          ) : null
-        } // If no content it will render null
-        leftDrawerUnder // default false
-        leftDrawerContent={<BasicDrawer links={getDrawer()} />} // If no content it will render null
-        leftDrawerType="persistent" // default temporary
+        // appBarPosition={"static"} //default value
+        // appBarContent={
+        //   <BasicAppBar title={"Delivery Management System"} menuIconAlways />
+        // }
+   
+        // footerContent={
+        //   history.location.pathname !== "/map" ? (
+        //     <BasicFooter
+        //       title={"Powermap"}
+        //       logo={require("../assets/images/logo.png")}
+        //     />
+        //   ) : null
+        // } 
+        // leftDrawerUnder // default false
+        // leftDrawerContent={<BasicDrawer links={getDrawer()} />} // If no content it will render null
+        // leftDrawerType="persistent" // default temporary
 
-        /** Right sidebar for map only */
-        // rightDrawerContent={history.location.pathname === "/map" ? ( <BasicDrawer links={links_user} /> ) : null} // If no content it will render null
-        // rightDrawerType={history.location.pathname === "/map" ?"permanent" : null} // default temporary
-        // rightDrawerUnder
       >
         {children}
       </Layout>
