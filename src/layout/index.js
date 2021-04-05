@@ -214,7 +214,7 @@ class AppLayout extends React.Component {
         // appBarContent={
         //   <BasicAppBar title={"Delivery Management System"} menuIconAlways />
         // }
-   
+
         // footerContent={
         //   history.location.pathname !== "/map" ? (
         //     <BasicFooter
@@ -222,11 +222,10 @@ class AppLayout extends React.Component {
         //       logo={require("../assets/images/logo.png")}
         //     />
         //   ) : null
-        // } 
+        // }
         // leftDrawerUnder // default false
         // leftDrawerContent={<BasicDrawer links={getDrawer()} />} // If no content it will render null
         // leftDrawerType="persistent" // default temporary
-
       >
         {children}
       </Layout>

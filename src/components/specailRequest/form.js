@@ -14,13 +14,13 @@ import DestSelect from "./destSelect.js";
 import Alert from "./alert";
 import { useForm, useFieldArray } from "react-hook-form";
 
-import MomentUtils from '@date-io/moment';
+import MomentUtils from "@date-io/moment";
 import {
   DatePicker,
   TimePicker,
   DateTimePicker,
   MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
+} from "@material-ui/pickers";
 const Form = () => {
   const [destState, setDestState] = React.useState([{}]);
   const {
@@ -30,6 +30,7 @@ const Form = () => {
     errors,
     getValues,
     reset,
+    watch,
     control,
   } = useForm();
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
@@ -41,7 +42,11 @@ const Form = () => {
 
   const [destData, setDestData] = React.useState([]);
   // const [startData, setstartData] = React.useState([]);
-  const [selectedDate, handleDateChange] = React.useState({ reqDate: null, time: null, date: new moment().format('DD/MM/YYYY') });
+  const [selectedDate, handleDateChange] = React.useState({
+    reqDate: null,
+    arriveTime: null,
+    date: new moment().format("DD/MM/YYYY"),
+  });
   const [destError, setDestError] = React.useState(false);
   const changeDest = (index, d) => {
     destData[index] = d.value;
@@ -56,17 +61,19 @@ const Form = () => {
   // };
   // console.log(destData);
   const handleReqDest = (e, type) => {
-    if (type == 'reqDate') {
-      handleDateChange({ ...selectedDate, reqDate: e })
+    if (type == "reqDate") {
+      handleDateChange({ ...selectedDate, reqDate: e });
       setValue("requestDate", e);
     }
-    if (type == 'date') {
-      handleDateChange({ ...selectedDate, date: e })
+    if (type == "date") {
+      handleDateChange({ ...selectedDate, date: e });
       setValue("date", e);
     }
-
-
-  }
+    if (type == "arriveTime") {
+      handleDateChange({ ...selectedDate, arriveTime: e });
+      setValue("arriveTime", e);
+    }
+  };
   const onSubmit = async (data, e) => {
     console.log(data);
     // if (getValues("cost").includes("Other")) {
@@ -104,7 +111,7 @@ const Form = () => {
     console.log(JSON.stringify(destPlace));
     // return;
     const body = {
-      date: moment(data.date, "YYYY-MM-DD").format("YYYYMMDD"),
+      date: moment(data.date, "DD-MM-YYYY").format("YYYYMMDD"),
       job_no: data.jobNo,
       cost: data.cost,
       // suppiler: data.suppiler,
@@ -129,7 +136,7 @@ const Form = () => {
     const oldData = data;
     console.log(body);
     // return null;
-    return
+    return;
     await fetch("https://delivery-backend-1.powermap.live/specialrequests", {
       method: "POST",
       headers: {
@@ -235,31 +242,35 @@ const Form = () => {
               <table align="center" border="1" cellpadding="0" cellspacing="0" width="400" style='font-family : Bai Jamjuree ;font-size : 16px ;'>
                 <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Job No. </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${data.jobNo
-        } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${
+                      data.jobNo
+                    } </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Date to use car </td>
                     <td style='padding : 4px 0px ; text-align :center ;'>${moment(
-          data.requestDate,
-          "YYYYMMDD"
-        ).format("DD-MM-YYYY")}  </td>
+                      data.requestDate,
+                      "YYYYMMDD"
+                    ).format("DD-MM-YYYY")}  </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'> Car </td>
-                    <td style='padding : 4px 0px ;  text-align :center ;'>${data.carType
-        }  ${data.amountCar}  คัน
+                    <td style='padding : 4px 0px ;  text-align :center ;'>${
+                      data.carType
+                    }  ${data.amountCar}  คัน
                     </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Request By </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${data.requestBy
-        } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${
+                      data.requestBy
+                    } </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Purpose </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${data.purpose
-        } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${
+                      data.purpose
+                    } </td>
                 </tr>
           </table>
           <br>
@@ -355,10 +366,12 @@ const Form = () => {
     register("carType", { required: "Please select type of car" });
     register("return", { required: "Please select return" });
     register("date", { required: "Please select date" });
+    register("arriveTime", { required: "Please select time" });
     register("requestDate", { required: "Please select date" });
     // register("placeStart", { required: "Please select start place" });
 
     // setValue("requestDate", new moment());
+    setValue("date", new moment());
     setValue("return", "No");
     // register("dest", { required: "Please select destination" });
     // register("approvedBy", { required: "Please select approver" });
@@ -400,15 +413,15 @@ const Form = () => {
                 </Grid> */}
                   <Grid xs={6} sm={6} item>
                     <DatePicker
-                      label="Requirement Date to use (วันที่ต้องการใช้รถ)"
+                      label="Date"
                       value={selectedDate.date}
                       // onChange={handleDateChange}
                       // value={getValues('requestDate')}
-                      onChange={(e) => handleReqDest(e, 'date')}
+                      onChange={(e) => handleReqDest(e, "date")}
                       autoOk
                       disablePast
                       fullWidth={true}
-                      format='DD/MM/YYYY'
+                      format="DD/MM/YYYY"
                     />
 
                     {/* <TextField
@@ -433,7 +446,7 @@ const Form = () => {
                       name="jobNo"
                       fullWidth={true}
                       label="Job No."
-                    // defaultValue="1111111111"
+                      // defaultValue="1111111111"
                     />
                     {errors.jobNo && (
                       <Alert
@@ -674,11 +687,11 @@ const Form = () => {
                       value={selectedDate.reqDate}
                       // onChange={handleDateChange}
                       // value={getValues('requestDate')}
-                      onChange={(e) => handleReqDest(e, 'reqDate')}
+                      onChange={(e) => handleReqDest(e, "reqDate")}
                       autoOk
                       disablePast
                       fullWidth={true}
-                      format='DD/MM/YYYY'
+                      format="DD/MM/YYYY"
                     />
 
                     {/* <TextField
@@ -702,7 +715,7 @@ const Form = () => {
                     )}
                   </Grid>
                   <Grid xs={12} sm={6} item>
-                    <TextField
+                    {/* <TextField
                       inputRef={register({ required: true })}
                       type="time"
                       inputProps={{
@@ -717,6 +730,15 @@ const Form = () => {
                       InputLabelProps={{
                         shrink: true,
                       }}
+                    /> */}
+                    <TimePicker
+                      fullWidth={true}
+                      autoOk
+                      todayLabel="now"
+                      label="Need arrival time (เวลาขึ้นงาน)"
+                      value={selectedDate.arriveTime}
+                      minutesStep={5}
+                      onChange={(e) => handleReqDest(e, "arriveTime")}
                     />
                     {errors.arriveTime && (
                       <Alert
@@ -815,7 +837,12 @@ const Form = () => {
                           label="Contact Name"
                         />
                       </Grid>
-                      <Grid xs={12} sm={4} item style={{ position: "relative" }}>
+                      <Grid
+                        xs={12}
+                        sm={4}
+                        item
+                        style={{ position: "relative" }}
+                      >
                         <TextField
                           style={{ width: "80%" }}
                           inputRef={register({ required: true })}
@@ -877,7 +904,7 @@ const Form = () => {
                         name="return"
                         onChange={(e) => setValue("return", e.target.value)}
                         defaultValue="No"
-                      // value={value}
+                        // value={value}
                       >
                         <FormControlLabel
                           value="Yes"
@@ -986,9 +1013,14 @@ const Form = () => {
                   )}
                 </Grid> */}
                   <Grid item sm={12} container justify="center">
-                    <Button color="primary" type="submit" variant="outlined">
+                    <Button
+                      onClick={(e) => console.log(watch())}
+                      color="primary"
+                      type="submit"
+                      variant="outlined"
+                    >
                       Submit
-                  </Button>
+                    </Button>
                   </Grid>
                 </Grid>
               </form>
