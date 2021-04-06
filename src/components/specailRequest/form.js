@@ -114,12 +114,12 @@ const Form = () => {
       date: moment(data.date, "DD-MM-YYYY").format("YYYYMMDD"),
       job_no: data.jobNo,
       cost: data.cost,
-      // suppiler: data.suppiler,
+      suppiler: null,
       car_type: data.carType,
       product: data.product,
       car_amount: data.amountCar,
       request_date: moment(data.requestDate, "YYYY-MM-DD").format("YYYYMMDD"),
-      arrive_time: data.arriveTime,
+      arrive_time: moment(data.arriveTime).format('HH:mm'),
       purpose: data.purpose,
       start_place: data.startPlace,
       start_contact: data.startContact,
@@ -130,13 +130,14 @@ const Form = () => {
       return: data.return,
       request_by: data.requestBy,
       approve_by: JSON.stringify(data.approvedBy),
-      arrange_by: data.arrangedBy,
-      arrange_date: moment(data.dateArranged, "YYYY-MM-DD").format("YYYYMMDD"),
+      // arrange_by: data.arrangedBy,
+      // arrange_date: moment(data.dateArranged, "YYYY-MM-DD").format("YYYYMMDD"),
     };
+    data.destPlace = destPlace
     const oldData = data;
     console.log(body);
     // return null;
-    return;
+    // return;
     await fetch("https://delivery-backend-1.powermap.live/specialrequests", {
       method: "POST",
       headers: {
@@ -152,6 +153,7 @@ const Form = () => {
         await sendEmail(data, res.id);
         alert("Send Success");
         e.target.reset();
+        window.close()
       });
   };
   const [otherCost, setOtherCost] = React.useState(true);
@@ -240,37 +242,43 @@ const Form = () => {
                        ">
                 <p style="font-family: Arial ;margin: 0 0 16 0;font-size : 2em;">ข้อมูลการส่งของ</p>
               <table align="center" border="1" cellpadding="0" cellspacing="0" width="400" style='font-family : Bai Jamjuree ;font-size : 16px ;'>
-                <tr>
+              <tr>
+              <td style='padding : 4px 0px ; text-align :center ;'>Request By </td>
+                <td style='padding : 4px 0px ; text-align :center ;'>${data.requestBy
+        } </td>
+            </tr>
+              <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Job No. </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.jobNo
-                    } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.jobNo
+        } </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Date to use car </td>
                     <td style='padding : 4px 0px ; text-align :center ;'>${moment(
-                      data.requestDate,
-                      "YYYYMMDD"
-                    ).format("DD-MM-YYYY")}  </td>
+          data.requestDate,
+          "YYYYMMDD"
+        ).format("DD-MM-YYYY")}  </td>
                 </tr>
                  <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'> Car </td>
-                    <td style='padding : 4px 0px ;  text-align :center ;'>${
-                      data.carType
-                    }  ${data.amountCar}  คัน
+                    <td style='padding : 4px 0px ;  text-align :center ;'>${data.carType
+        }  ${data.amountCar}  คัน
                     </td>
                 </tr>
                  <tr>
-                  <td style='padding : 4px 0px ; text-align :center ;'>Request By </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.requestBy
-                    } </td>
+                  <td style='padding : 4px 0px ; text-align :center ;'>Start Place </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.startPlace
+        } </td>
                 </tr>
                  <tr>
-                  <td style='padding : 4px 0px ; text-align :center ;'>Purpose </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.purpose
-                    } </td>
+                  <td style='padding : 4px 0px ; text-align :center ;'>Destination </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.destPlace
+        } </td>
+                </tr>
+                 <tr>
+                  <td style='padding : 4px 0px ; text-align :center ;'>purpose </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.purpose
+        } </td>
                 </tr>
           </table>
           <br>
@@ -368,9 +376,11 @@ const Form = () => {
     register("date", { required: "Please select date" });
     register("arriveTime", { required: "Please select time" });
     register("requestDate", { required: "Please select date" });
+    register("requestBy", { required: "Please fill date" });
     // register("placeStart", { required: "Please select start place" });
 
     // setValue("requestDate", new moment());
+    setValue("requestBy", localStorage.getItem("username"));
     setValue("date", new moment());
     setValue("return", "No");
     // register("dest", { required: "Please select destination" });
@@ -446,7 +456,7 @@ const Form = () => {
                       name="jobNo"
                       fullWidth={true}
                       label="Job No."
-                      // defaultValue="1111111111"
+                    // defaultValue="1111111111"
                     />
                     {errors.jobNo && (
                       <Alert
@@ -904,7 +914,7 @@ const Form = () => {
                         name="return"
                         onChange={(e) => setValue("return", e.target.value)}
                         defaultValue="No"
-                        // value={value}
+                      // value={value}
                       >
                         <FormControlLabel
                           value="Yes"
@@ -928,11 +938,12 @@ const Form = () => {
                   )}
                   <Grid xs={12} sm={6} item>
                     <TextField
-                      inputRef={register({ required: true })}
+                      // inputRef={register({ required: true })}
                       // required
                       name="requestBy"
                       fullWidth={true}
                       label="Request By"
+                      defaultValue={localStorage.getItem("username")}
                     />
                     {errors.requestBy && (
                       <Alert

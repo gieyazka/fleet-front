@@ -47,37 +47,43 @@ const Status = () => {
                        ">
                 <p style="font-family: Arial ;margin: 0 0 16 0;font-size : 2em;">ข้อมูลการส่งของ</p>
               <table align="center" border="1" cellpadding="0" cellspacing="0" width="400" style='font-family : Bai Jamjuree ;font-size : 16px ;'> 
-                <tr> 
+              <tr>
+              <td style='padding : 4px 0px ; text-align :center ;'>Request By </td>
+                <td style='padding : 4px 0px ; text-align :center ;'>${data.request_by
+      } </td>
+            </tr>
+              <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Job No. </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.job_no
-                    } </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.job_no
+      } </td>
                 </tr>
-                 <tr> 
+                 <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'>Date to use car </td>
                     <td style='padding : 4px 0px ; text-align :center ;'>${moment(
-                      data.request_date,
-                      "YYYY-MM-DD"
-                    ).format("DD-MM-YYYY")}  </td>
+        data.request_date,
+        "YYYYMMDD"
+      ).format("DD-MM-YYYY")}  </td>
                 </tr>
-                 <tr> 
+                 <tr>
                   <td style='padding : 4px 0px ; text-align :center ;'> Car </td>
-                    <td style='padding : 4px 0px ;  text-align :center ;'>${
-                      data.car_type
-                    }  ${data.car_amount}  คัน
+                    <td style='padding : 4px 0px ;  text-align :center ;'>${data.carType
+      }  ${data.car_amount}  คัน
                     </td>
                 </tr>
-                 <tr> 
-                  <td style='padding : 4px 0px ; text-align :center ;'>Request By </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.request_by
-                    } </td>
+                 <tr>
+                  <td style='padding : 4px 0px ; text-align :center ;'>Start Place </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.start_place
+      } </td>
                 </tr>
-                 <tr> 
-                  <td style='padding : 4px 0px ; text-align :center ;'>Purpose </td>
-                    <td style='padding : 4px 0px ; text-align :center ;'>${
-                      data.purpose
-                    } </td>
+                 <tr>
+                  <td style='padding : 4px 0px ; text-align :center ;'>Destination </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${JSON.parse(data.dest_place)}
+       </td>
+                </tr>
+                 <tr>
+                  <td style='padding : 4px 0px ; text-align :center ;'>purpose </td>
+                    <td style='padding : 4px 0px ; text-align :center ;'>${data.purpose
+      } </td>
                 </tr>
           </table>
           <br>
@@ -89,8 +95,14 @@ const Status = () => {
                   <td span='2' align="center" style="border-radius: 8px;" bgcolor="">
  
           
-        <!--[if mso]>
-  
+                  <!--[if mso]>
+                  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${path}/request" style="height:40px;v-text-anchor:middle;width:100px;" arcsize="10%" strokecolor="#1D366D" fillcolor="#1D366D">
+                  <w:anchorlock/>
+                  <center style="color:#ffffff;font-family:sans-serif;font-size:13px;font-weight:bold;">VIEW DATA</center>
+                  </v:roundrect>
+                  <![endif]--><a href="${path}/request" target="_blank"
+                  style="background-color:#1D366D;border:1px solid #1D366D;border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:40px;text-align:center;text-decoration:none;width:100px;-webkit-text-size-adjust:none;mso-hide:all;">VIEW DATA</a>
+
       
       
        </td>
@@ -173,13 +185,13 @@ const Status = () => {
             status === "approve"
               ? "approved"
               : status === "reject"
-              ? "rejected"
-              : "waiting",
+                ? "rejected"
+                : "waiting",
         }),
       }
     )
       .then((response) => response.json())
-      .then(async (res) => {});
+      .then(async (res) => { });
   };
 
   if (reqData && reqData.status === "waiting") {
