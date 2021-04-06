@@ -86,7 +86,7 @@ const ReqTable = () => {
   const getData = async (endDate, startDate) => {
     if (userRole === 'issuer') {
       return await fetch(
-        `https://delivery-backend-1.powermap.live/specialrequests?request_date_lte=${startDate}&request_date_gte=${endDate}&status=approved&request_by=${localStorage.getItem("username")}`,
+        `https://delivery-backend-1.powermap.live/specialrequests?request_date_lte=${startDate}&request_date_gte=${endDate}&status=approved&request_by=${localStorage.getItem("username")}&_sort=request_date:DESC`,
         {
           method: "GET",
         }
@@ -97,7 +97,7 @@ const ReqTable = () => {
         });
     } else {
       return await fetch(
-        `https://delivery-backend-1.powermap.live/specialrequests?request_date_lte=${startDate}&request_date_gte=${endDate}&status=approved`,
+        `https://delivery-backend-1.powermap.live/specialrequests?request_date_lte=${startDate}&request_date_gte=${endDate}&status=approved&_sort=request_date:DESC`,
         {
           method: "GET",
         }
@@ -652,7 +652,7 @@ const ReqTable = () => {
                   method: "PUT",
                   headers: {
                     "Content-Type": "application/json;charset=UTF-8",
-                  },
+                  }, 
                   body: JSON.stringify({ status: 'delete' }),
                 }).then((response) => response.json())
                   .then(async (res) => {

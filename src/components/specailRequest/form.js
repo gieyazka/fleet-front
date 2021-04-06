@@ -88,6 +88,7 @@ const Form = () => {
     //   data.suppiler = getValues("suppilerOther");
     // }
     // delete data.suppilerOther;
+
     delete data.costOther;
     let destPlace = [];
     let destTel = [];
@@ -110,9 +111,22 @@ const Form = () => {
     // setDestError(false);
     console.log(JSON.stringify(destPlace));
     // return;
+    let maxJobNo
+    await getMaxJob().then(res => {
+      if (res[0]) {
+        let num = parseInt(res[0].job_no) + 1
+        
+        maxJobNo = pad(num, 4)
+      } else {
+        maxJobNo = pad(1, 4)
+      }
+
+    })
+    // console.log(maxJobNo);
+    
     const body = {
       date: moment(data.date, "DD-MM-YYYY").format("YYYYMMDD"),
-      job_no: data.jobNo,
+      job_no: maxJobNo,
       cost: data.cost,
       suppiler: null,
       car_type: data.carType,
@@ -197,6 +211,35 @@ const Form = () => {
     data.pop();
     setDestState(data);
   };
+  function pad(n, width, z) {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  }
+  const [maxJobNo, setMax] = React.useState(0)
+  const getMaxJob = async () => {
+    return await fetch(
+      `https://delivery-backend-1.powermap.live/specialrequests?&_sort=job_no:DESC&_limit=1`,
+      {
+        method: "GET",
+      }
+    )
+      .then((response) => response.json())
+      .then(async (res) => {
+
+        if (res[0]) {
+          setMax(res[0].job_no)
+        } else {
+          setMax('0000')
+        }
+        return res
+      });
+  }
+  React.useMemo(async () => {
+    await getMaxJob()
+
+  }, [])
+
 
   const sendEmail = async (data, id) => {
     // console.log(data);
@@ -456,6 +499,7 @@ const Form = () => {
                       name="jobNo"
                       fullWidth={true}
                       label="Job No."
+                      value={pad(parseInt(maxJobNo) + 1, 4)}
                     // defaultValue="1111111111"
                     />
                     {errors.jobNo && (
