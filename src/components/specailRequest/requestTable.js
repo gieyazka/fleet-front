@@ -84,9 +84,9 @@ const ReqTable = () => {
   const userRole = localStorage.getItem("role")
   // console.log(userRole);
   const getData = async (endDate, startDate) => {
-    if (userRole === 'issuer') {
+    if (userRole === 'Special') {
       return await fetch(
-        `https://delivery-backend-1.powermap.live/specialrequests?request_date_lte=${startDate}&request_date_gte=${endDate}&status=approved&request_by=${localStorage.getItem("username")}&_sort=request_date:DESC`,
+        `https://delivery-backend-1.powermap.live/specialrequests?request_date_lte=${startDate}&request_date_gte=${endDate}&status_ne=delete&request_by=${localStorage.getItem("username")}&_sort=request_date:DESC`,
         {
           method: "GET",
         }
@@ -619,7 +619,7 @@ const ReqTable = () => {
               // },
             ]}
 
-            editable={userRole === 'issuer' || userRole === 'special' ? {
+            editable={userRole === 'issuer' || userRole === 'Special' ? {
               onRowDelete: oldData =>
                 new Promise((resolve, reject) => {
                   // setTimeout(() => {
@@ -686,6 +686,7 @@ const ReqTable = () => {
               fixedColumns: {
                 left: 5
               },
+              
 
               // exportButton: true,
               // exportCsv: async (columns, data) => {
@@ -696,10 +697,14 @@ const ReqTable = () => {
 
               headerStyle: {
                 fontWeight: "bold",
-                textAlign: 'center'
+                // textAlign: 'center'
 
                 // minWidth: "100px",
               },
+              rowStyle : {
+                // textAlign : 'right',
+                // backgroundColor: 'yellow'
+              }
             }}
             localization={{
 

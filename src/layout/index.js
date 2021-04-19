@@ -109,11 +109,16 @@ const links_user = [
   },
 ];
 const links_special = [
-
+  
   {
     iconName: "view_list",
     href: "request",
     label: "Request Table",
+  }, {
+    iconName: "person",
+    href: "#",
+    label: "Logout",
+    onClick: () => Auth.logout(),
   },
 ]
 const links_purchaser = [
@@ -194,8 +199,9 @@ const links_admin = [
 ];
 
 function getDrawer() {
+  console.log(202);
   switch (localStorage.getItem("role")) {
-    case "Specail":
+    case "Special":
       return links_special
     case "Administrator":
       return links_administration;
@@ -234,7 +240,7 @@ class AppLayout extends React.Component {
           ) : null
         }
         leftDrawerUnder // default false
-        leftDrawerContent={<BasicDrawer links={getDrawer()} />} // If no content it will render null
+        leftDrawerContent={<BasicDrawer links={()=>getDrawer()} />} // If no content it will render null
         leftDrawerType="persistent" // default temporary
       >
         {children}

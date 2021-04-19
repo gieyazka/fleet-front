@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import server  from '../config';
+import server from '../config';
 import axios from 'axios';
 import AuthService from '../components/AuthService';
 
@@ -49,13 +49,13 @@ const styles = theme => ({
 
 class SignIn extends Component {
 
-  constructor (props){
-      super(props);
-      this.state = {
-          email: '',
-          password: ''
-      };
-      this.Auth = new AuthService();
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: ''
+    };
+    this.Auth = new AuthService();
   }
 
   Auth = new AuthService();
@@ -65,15 +65,20 @@ class SignIn extends Component {
       [name]: event.target.value,
     });
   };
-  
+
   handleClick = () => {
-        this.Auth.login(this.state.email, this.state.password).then(res =>{
-            console.log(res);
-            this.props.history.push('/home');
-         })
-         .catch(err =>{
-            console.log(err);
-         })
+    this.Auth.login(this.state.email, this.state.password).then(res => {
+      console.log(res);
+      console.log(localStorage.getItem("role"));
+      if (localStorage.getItem("role") !== 'Special') {
+        this.props.history.push('/home');
+      } else {
+        this.props.history.push('/request');
+      }
+    })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   handleKeyPress = event => {
@@ -81,57 +86,57 @@ class SignIn extends Component {
       this.handleClick();
     }
   };
-  
-  render () {
+
+  render() {
 
     const { classes } = this.props;
 
     // if (this.Auth.loggedIn()){
     //     return <Redirect to={'/home'} />;
     // } 
-    
+
     return (
-        <main className={classes.main}>
+      <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
-            <Avatar className={classes.avatar}>
+          <Avatar className={classes.avatar}>
             <LockIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
+          </Avatar>
+          <Typography component="h1" variant="h5">
             Sign in
             </Typography>
-            <form className={classes.form}
-                >
-                <FormControl margin="normal" required fullWidth>
-                    <InputLabel htmlFor="email">Email Address</InputLabel>
-                    <Input id="email" name="email" autoComplete="email" value={this.state.email} autoFocus onChange={this.handleChange('email')} onKeyPress={this.handleKeyPress}/>
-                </FormControl>
-                <FormControl margin="normal" required fullWidth>
-                    <InputLabel htmlFor="password">Password</InputLabel>
-                    <Input name="password" type="password" id="password" value={this.state.password} autoComplete="current-password" onChange={this.handleChange('password')} onKeyPress={this.handleKeyPress}/>
-                </FormControl>
-                {/* <FormControlLabel
+          <form className={classes.form}
+          >
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="email">Email Address</InputLabel>
+              <Input id="email" name="email" autoComplete="email" value={this.state.email} autoFocus onChange={this.handleChange('email')} onKeyPress={this.handleKeyPress} />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input name="password" type="password" id="password" value={this.state.password} autoComplete="current-password" onChange={this.handleChange('password')} onKeyPress={this.handleKeyPress} />
+            </FormControl>
+            {/* <FormControlLabel
                     control={<Checkbox value="remember" color="primary" />}
                     label="Remember me"
                 /> */}
-                <Button
-                    fullWidth 
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    onClick={() => this.handleClick()}
-                >
-                    Sign in
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => this.handleClick()}
+            >
+              Sign in
                 </Button>
-            </form>
+          </form>
         </Paper>
-        </main>
+      </main>
     );
-    }
+  }
 }
 
 SignIn.propTypes = {
-    classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(SignIn);

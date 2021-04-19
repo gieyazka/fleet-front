@@ -45,7 +45,7 @@ const Form = () => {
   const [selectedDate, handleDateChange] = React.useState({
     reqDate: null,
     arriveTime: null,
-    date: new moment().format("DD/MM/YYYY"),
+    date: new moment(),
   });
   const [destError, setDestError] = React.useState(false);
   const changeDest = (index, d) => {
