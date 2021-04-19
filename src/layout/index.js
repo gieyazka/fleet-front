@@ -1,10 +1,8 @@
 import React from "react";
-import Layout, {
-  BasicAppBar,
-  BasicFooter,
-  BasicDrawer,
-} from "material-ui-layout";
-
+import Layout from "material-ui-layout";
+import BasicAppBar from "material-ui-layout/lib/templates/AppBar/BasicAppBar";
+import BasicDrawer from "material-ui-layout/lib/templates/Drawer/BasicDrawer";
+import BasicFooter from "material-ui-layout/lib/templates/Footer/BasicFooter";
 import Home from "@material-ui/icons/Home";
 import AuthSerice from "../components/AuthService";
 
@@ -12,6 +10,12 @@ const Auth = new AuthSerice();
 
 // Defined here for link format reference
 const links_administration = [
+
+  {
+    iconName: "view_list",
+    href: "request",
+    label: "Request Table",
+  },
   {
     icon: Home,
     href: "/home",
@@ -91,11 +95,7 @@ const links_user = [
     href: "/invoicelist",
     label: "Order List",
   },
-  {
-    iconName: "person",
-    href: "form",
-    label: "Form",
-  },
+
   {
     iconName: "view_list",
     href: "request",
@@ -108,7 +108,14 @@ const links_user = [
     onClick: () => Auth.logout(),
   },
 ];
+const links_special = [
 
+  {
+    iconName: "view_list",
+    href: "request",
+    label: "Request Table",
+  },
+]
 const links_purchaser = [
   {
     icon: Home,
@@ -188,6 +195,8 @@ const links_admin = [
 
 function getDrawer() {
   switch (localStorage.getItem("role")) {
+    case "Specail":
+      return links_special
     case "Administrator":
       return links_administration;
     case "admin":
@@ -205,27 +214,28 @@ function getDrawer() {
 
 class AppLayout extends React.Component {
   render() {
+    console.log(BasicAppBar)
     const { children, history } = this.props;
     return (
       <Layout
         stickyFooter // default false
         mainGrow={false} // default true
-        // appBarPosition={"static"} //default value
-        // appBarContent={
-        //   <BasicAppBar title={"Delivery Management System"} menuIconAlways />
-        // }
+        appBarPosition={"static"} //default value
+        appBarContent={
+          <BasicAppBar title={"Delivery Management System"} menuIconAlways />
+        }
 
-        // footerContent={
-        //   history.location.pathname !== "/map" ? (
-        //     <BasicFooter
-        //       title={"Powermap"}
-        //       logo={require("../assets/images/logo.png")}
-        //     />
-        //   ) : null
-        // }
-        // leftDrawerUnder // default false
-        // leftDrawerContent={<BasicDrawer links={getDrawer()} />} // If no content it will render null
-        // leftDrawerType="persistent" // default temporary
+        footerContent={
+          history.location.pathname !== "/map" ? (
+            <BasicFooter
+              title={"Powermap"}
+              logo={require("../assets/images/logo.png")}
+            />
+          ) : null
+        }
+        leftDrawerUnder // default false
+        leftDrawerContent={<BasicDrawer links={getDrawer()} />} // If no content it will render null
+        leftDrawerType="persistent" // default temporary
       >
         {children}
       </Layout>

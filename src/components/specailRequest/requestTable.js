@@ -523,7 +523,7 @@ const ReqTable = () => {
             icons={tableIcons}
             columns={[
               { title: "", field: "", editable: 'never', width: 50 },
-              {
+              userRole === 'Administrator' || userRole === 'purchaser' ? {
                 title: "Approve",
                 render: (rowData) => (
                   <Tooltip title="Approve">
@@ -536,7 +536,8 @@ const ReqTable = () => {
                   </Tooltip>
 
                 ), width: 150
-              },
+              } : { title: "", field: "",editable: 'never',width : 20 }
+              ,
               { title: "Job No", field: "job_no", editable: 'never', width: 120 },
 
               {
@@ -618,7 +619,7 @@ const ReqTable = () => {
               // },
             ]}
 
-            editable={userRole === 'issuer' ? {
+            editable={userRole === 'issuer' || userRole === 'special' ? {
               onRowDelete: oldData =>
                 new Promise((resolve, reject) => {
                   // setTimeout(() => {
@@ -645,26 +646,26 @@ const ReqTable = () => {
 
             } : userRole === 'Administrator' || userRole === 'purchaser' ? {
               onRowDelete: oldData =>
-              new Promise((resolve, reject) => {
-                // setTimeout(() => {
-                console.log(oldData);
-                resolve(fetch(`https://delivery-backend-1.powermap.live/specialrequests/${oldData._id}`, {
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                  }, 
-                  body: JSON.stringify({ status: 'delete' }),
-                }).then((response) => response.json())
-                  .then(async (res) => {
-                    await getData(moment(dateFilter.startDate).format('YYYYMMDD'), dateFilter.endDate.format('YYYYMMDD')).then(async res => {
-                      setReqData(res);
-                      await dataExcel(res)
-                    })
-                    // setAlert({ success: true, error: false })
-                  }))
+                new Promise((resolve, reject) => {
+                  // setTimeout(() => {
+                  console.log(oldData);
+                  resolve(fetch(`https://delivery-backend-1.powermap.live/specialrequests/${oldData._id}`, {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json;charset=UTF-8",
+                    },
+                    body: JSON.stringify({ status: 'delete' }),
+                  }).then((response) => response.json())
+                    .then(async (res) => {
+                      await getData(moment(dateFilter.startDate).format('YYYYMMDD'), dateFilter.endDate.format('YYYYMMDD')).then(async res => {
+                        setReqData(res);
+                        await dataExcel(res)
+                      })
+                      // setAlert({ success: true, error: false })
+                    }))
 
-              })
-            ,
+                })
+              ,
               onRowUpdate: (newData, oldData) =>
 
                 new Promise((resolve, reject) => {
